@@ -6,9 +6,9 @@
   provider-name="Benji">
 
   <extension point="xbmc.addon.repository">
-  <info compressed="false">
-  https://wisleygomes.github.io/benji/addons.xml
-  </info>
+    <info compressed="false">
+      https://wisleygomes.github.io/benji/addons.xml
+    </info>
     <checksum>
       https://wisleygomes.github.io/benji/addons.xml.md5
     </checksum>
