@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addons>
+
 <addon
   id="plugin.video.benjiplay"
   name="Benji Play"
@@ -25,3 +27,5 @@
   </extension>
 
 </addon>
+
+</addons>
