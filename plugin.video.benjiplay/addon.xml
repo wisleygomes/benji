@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="plugin.video.benjiplay"
   name="Benji Play"
@@ -6,7 +6,7 @@
   provider-name="Benji">
 
   <requires>
-    <import addon="xbmc.python" version="3.0.0"/>
+    <import addon="xbmc.python" version="2.25.0"/>
   </requires>
 
   <extension
@@ -17,8 +17,13 @@
 
   <extension point="xbmc.addon.metadata">
     <summary>Entretenimento direto ao ponto</summary>
-    <description>Benji Play é um addon de vídeo simples e funcional.</description>
+    <description>Clone fake só pra zoar — conteúdo chegando “em breve”.</description>
+
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>fanart.jpg</fanart>
+    </assets>
+
     <platform>all</platform>
   </extension>
-
 </addon>

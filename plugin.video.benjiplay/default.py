@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import os
 import xbmcgui
 import xbmcplugin
 import xbmcaddon
-import os
 
 addon_handle = int(sys.argv[1])
 addon = xbmcaddon.Addon()
@@ -23,6 +23,7 @@ def add_item(name, action):
         "thumb": ICON,
         "fanart": FANART
     })
+    li.setProperty("IsPlayable", "false")
 
     xbmcplugin.addDirectoryItem(
         handle=addon_handle,
@@ -35,7 +36,10 @@ def router(paramstring):
     if paramstring == "":
         show_menu()
     else:
-        xbmcgui.Dialog().ok("Benji Play", "Opção ainda em desenvolvimento")
+        xbmcgui.Dialog().ok(
+            "Benji Play 😎",
+            "Conteúdo em desenvolvimento eterno.\n\nVolte em 2035."
+        )
 
 def show_menu():
     add_item("📺 Filmes", "filmes")
