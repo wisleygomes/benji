@@ -1,83 +1,80 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import requests
+import os
 import xbmcgui
 import xbmcplugin
-import re
+import xbmcaddon
+import requests
 
 addon_handle = int(sys.argv[1])
-base_url = sys.argv[0]
+addon = xbmcaddon.Addon()
+addon_path = addon.getAddonInfo('path')
 
 ICON = os.path.join(addon_path, 'icon.png')
 FANART = os.path.join(addon_path, 'fanart.jpg')
 
-
 M3U_URL = "https://iptv-org.github.io/iptv/index.m3u"
 
-COUNTRIES = {
-    "BR": "🇧🇷 Brasil",
-    "US": "🇺🇸 Estados Unidos",
-    "PT": "🇵🇹 Portugal",
-    "ES": "🇪🇸 Espanha"
-}
-
+# =========================
+# UTIL
+# =========================
 def build_url(query):
-    return base_url + "?" + query
+    return sys.argv[0] + "?" + query
 
-def main_menu():
-    add_dir("📺 Filmes", "filmes")
-    add_dir("🎬 Séries", "series")
-    add_dir("📡 IPTV", "iptv")
+# =========================
+# MENU PRINCIPAL
+# =========================
+def show_menu():
+    add_folder("📺 Filmes", "filmes")
+    add_folder("🎬 Séries", "series")
+    add_folder("📡 Ao Vivo (IPTV)", "iptv")
     xbmcplugin.endOfDirectory(addon_handle)
 
-def add_dir(name, action):
+def add_folder(name, action):
     li = xbmcgui.ListItem(label=name)
+    li.setInfo("video", {"title": name})
     li.setArt({
-        "icon": "special://home/addons/plugin.video.benjiplay/icon.png",
-        "fanart": "special://home/addons/plugin.video.benjiplay/fanart.jpg"
+        "icon": ICON,
+        "thumb": ICON,
+        "fanart": FANART
     })
     xbmcplugin.addDirectoryItem(
         handle=addon_handle,
-        url=build_url(f"action={action}"),
+        url=build_url("action=" + action),
         listitem=li,
         isFolder=True
     )
 
-def iptv_menu():
-    for code, name in COUNTRIES.items():
-        li = xbmcgui.ListItem(label=name)
-        li.setArt({
-            "icon": "special://home/addons/plugin.video.benjiplay/icon.png",
-            "fanart": "special://home/addons/plugin.video.benjiplay/fanart.jpg"
-        })
-        xbmcplugin.addDirectoryItem(
-            handle=addon_handle,
-            url=build_url(f"action=channels&country={code}"),
-            listitem=li,
-            isFolder=True
+# =========================
+# IPTV (M3U)
+# =========================
+def load_iptv():
+    try:
+        response = requests.get(M3U_URL, timeout=15)
+        lines = response.text.splitlines()
+    except Exception as e:
+        xbmcgui.Dialog().notification(
+            "Benji Play",
+            "Erro ao carregar IPTV",
+            xbmcgui.NOTIFICATION_ERROR
         )
-    xbmcplugin.endOfDirectory(addon_handle)
-
-def load_channels(country_code):
-    response = requests.get(M3U_URL, timeout=20)
-    lines = response.text.splitlines()
+        return
 
     name = None
-    country = None
-
     for line in lines:
         if line.startswith("#EXTINF"):
             name = line.split(",", 1)[1]
-            match = re.search(r'tvg-country="([^"]+)"', line)
-            country = match.group(1) if match else None
-        elif line.startswith("http") and country == country_code:
+        elif line.startswith("http"):
             li = xbmcgui.ListItem(label=name)
             li.setInfo("video", {"title": name})
             li.setArt({
-                "icon": "special://home/addons/plugin.video.benjiplay/icon.png",
-                "fanart": "special://home/addons/plugin.video.benjiplay/fanart.jpg"
+                "icon": ICON,
+                "thumb": ICON,
+                "fanart": FANART
             })
+            li.setProperty("IsPlayable", "true")
+
             xbmcplugin.addDirectoryItem(
                 handle=addon_handle,
                 url=line,
@@ -87,17 +84,23 @@ def load_channels(country_code):
 
     xbmcplugin.endOfDirectory(addon_handle)
 
+# =========================
+# ROUTER
+# =========================
 def router(paramstring):
     if paramstring == "":
-        main_menu()
+        show_menu()
     elif "action=iptv" in paramstring:
-        iptv_menu()
-    elif "action=channels" in paramstring:
-        country = paramstring.split("country=")[-1]
-        load_channels(country)
+        load_iptv()
     else:
-        xbmcgui.Dialog().ok("Benji Play", "Em desenvolvimento")
+        xbmcgui.Dialog().ok(
+            "Benji Play 😎",
+            "Conteúdo ainda em desenvolvimento."
+        )
 
+# =========================
+# START
+# =========================
 if __name__ == "__main__":
     params = sys.argv[2][1:]
     router(params)
